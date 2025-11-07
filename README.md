@@ -1,10 +1,10 @@
 # CS 262 Monopoly Web Service
 
 This is the data service application for the
-[CS 262 sample Monopoly project](https://github.com/calvin-cs262-organization/monopoly-project),
+[CS 262 sample Monopoly project](https://github.com/joshuaeilu/monopoly-data-service.git),
  which is deployed here:
 
-- <https://cs262-egbefbd4aae2h0df.canadacentral-01.azurewebsites.net><br>(This URL may vary from year to year.)
+- <https://monopolyservice-acg3e2a8hpe5h4by.canadacentral-01.azurewebsites.net/><br>(This URL may vary from year to year.)
 
 Based on this URL, the service implements the following endpoints:
 
