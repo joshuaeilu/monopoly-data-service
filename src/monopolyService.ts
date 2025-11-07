@@ -227,12 +227,34 @@ function getGames(_request: Request, response: Response, next: NextFunction): vo
 }
 
 /**
- * Retrieves a game by ID from the database.
+ * Fetches all players who played in a given game by its ID.
+ */
+function fetchPlayersForGame(gameID: number): Promise<Player[]> {
+    return db.manyOrNone(
+        `SELECT Player.* FROM Player
+        JOIN PlayerGame ON Player.id = PlayerGame.playerID
+        WHERE PlayerGame.gameID = ${gameID}`
+    );
+}
+
+/**
+ * Retrieves a game by ID and score for every player who played in the game
  */
 function getGameById(request: Request, response: Response, next: NextFunction): void {
-    db.oneOrNone('SELECT * FROM Game WHERE id = ${id}', request.params)
+    db.oneOrNone('SELECT * FROM Game WHERE id=${id}', request.params)
         .then((data: Game | null): void => {
-            returnDataOr404(response, data);
+            if (!data) {
+                response.status(404).send({ message: 'Game not found' });
+                return;
+            }
+            // Fetch players for the game
+            fetchPlayersForGame(data.id)
+                .then((players) => {
+                    response.send({ game: data, players });
+                })
+                .catch((error) => {
+                    next(error);
+                });
         })
         .catch((error: Error): void => {
             next(error);
