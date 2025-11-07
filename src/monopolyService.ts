@@ -227,16 +227,17 @@ function getGames(_request: Request, response: Response, next: NextFunction): vo
 }
 
 /**
- * Fetches all players who played in a given game by its ID.
+ * Fetches all players who played in a given game alongside their scores by its ID.
  */
 function fetchPlayersForGame(gameID: number): Promise<Player[]> {
     return db.manyOrNone(
-        `SELECT Player.* FROM Player
+        `SELECT Player.*, PlayerGame.score FROM Player
         JOIN PlayerGame ON Player.id = PlayerGame.playerID
         WHERE PlayerGame.gameID = $1`,
         [gameID]
     );
-}
+}   
+    
 
 function getGameById(request: Request, response: Response, next: NextFunction): void {
     db.oneOrNone('SELECT * FROM Game WHERE id=$1', [request.params.id])
