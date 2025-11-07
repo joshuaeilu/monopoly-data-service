@@ -233,22 +233,20 @@ function fetchPlayersForGame(gameID: number): Promise<Player[]> {
     return db.manyOrNone(
         `SELECT Player.* FROM Player
         JOIN PlayerGame ON Player.id = PlayerGame.playerID
-        WHERE PlayerGame.gameID = ${gameID}`
+        WHERE PlayerGame.gameID = $1`,
+        [gameID]
     );
 }
 
-/**
- * Retrieves a game by ID and score for every player who played in the game
- */
 function getGameById(request: Request, response: Response, next: NextFunction): void {
-    db.oneOrNone('SELECT * FROM Game WHERE id=${id}', request.params)
-        .then((data: Game | null): void => {
+    db.oneOrNone('SELECT * FROM Game WHERE id=$1', [request.params.id])
+        .then(async (data: Game | null): Promise<void> => {
             if (!data) {
                 response.status(404).send({ message: 'Game not found' });
                 return;
             }
             // Fetch players for the game
-            fetchPlayersForGame(data.id)
+            await fetchPlayersForGame(data.id)
                 .then((players) => {
                     response.send({ game: data, players });
                 })
